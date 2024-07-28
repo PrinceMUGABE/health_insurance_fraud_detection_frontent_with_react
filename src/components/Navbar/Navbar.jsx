@@ -48,7 +48,7 @@ const Navbar = () => {
           >
             <img src={Logo} alt="" className="w-5" />
             <span className="text-2xl sm:text-3xl font-semibold">
-              Policy
+              Fraud Detection
             </span>
           </a>
           {/* Desktop view Navigation */}
@@ -65,7 +65,6 @@ const Navbar = () => {
                 </li>
               ))}
               <Link to="/login" className="primary-btn">Login</Link>
-              <Link to="/admin" className="primary-btn">Dashboard</Link>
               <DarkMode />
             </ul>
           </nav>

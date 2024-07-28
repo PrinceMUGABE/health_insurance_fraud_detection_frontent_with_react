@@ -1,5 +1,6 @@
+/* eslint-disable no-unused-vars */
 import React from "react";
-import hero from "../../assets/police_image/helo_lili.jpeg";
+import hero from "../../assets/police_image/img1.jpeg";
 
 const Hero = () => {
   return (
@@ -28,22 +29,24 @@ const Hero = () => {
               className="text-4xl sm:text-5xl font-semibold"
               style={{ lineHeight: 1.2 }}
             >
-              Get in tourch with updated police{" "}
-              <span className="text-primary">Policy M.System</span>
+              {/* Get in tourch with updated police{" "} */}
+              <span className="text-primary">Fraud Guard Healthy</span>
             </h1>
             <p data-aos="fade-up" data-aos-delay="300">
-             Lorem ipsum dolor sit amet consectetur adipisicing elit. 
-             Ad distinctio dignissimos ea eum, tenetur id ullam ex doloremque enim, 
-             aspernatur vitae quam modi sequi velit libero nemo maiores in voluptatum.
+                 1995, We chose to customize every aspect of our service. Every member of our team is devoted to working with you to understand your particular needs and goals so together we can find solutions that fit your lifestyle.
+
+                <br /> <br />While many services might say they are ‘personalized’ and ‘comprehensive’, we really are! We use latest technology to tract your medical history with us.
+
+                <br /><br />Most of our services are open 24/7 and 30+ specialists are available. Our Doctors are very friendly and will help you to determine your goals for your day here.
             </p>
-            <button
+            {/* <button
               data-aos="fade-up"
               data-aos-delay="500"
               data-aos-offset="0"
               className="primary-btn"
             >
               Learn More
-            </button>
+            </button> */}
           </div>
         </div>
       </div>

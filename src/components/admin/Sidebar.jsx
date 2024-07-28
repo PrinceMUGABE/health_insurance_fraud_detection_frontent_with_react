@@ -1,19 +1,22 @@
+// eslint-disable-next-line no-unused-vars
 import React, { useState } from 'react';
-import { FaUsers, FaRegFilePdf, FaFileExcel } from 'react-icons/fa';
+// eslint-disable-next-line no-unused-vars
+import { FaUsers, FaFileExcel } from 'react-icons/fa';
 import { MdDashboard } from 'react-icons/md';
 import { BiSolidInstitution } from 'react-icons/bi';
 import { Link } from 'react-router-dom';
-import Logo from '../../assets/police_image/logo_lil.jpeg';
-import { IoIosArrowDown, IoIosArrowForward } from 'react-icons/io';
-import { FaSchool } from "react-icons/fa";
-import { FaUniversity } from "react-icons/fa";
-import { MdOutlinePolicy } from "react-icons/md";
+// import Logo from '../../assets/police_image/logo_lil.jpeg';
+import Logo from '../../assets/police_image/nyirinkwayaLogo.jpeg';
 import { FcDepartment } from "react-icons/fc";
+// eslint-disable-next-line no-unused-vars
 import { FaCommentDots } from "react-icons/fa";
+import { FaUserNurse } from "react-icons/fa";
+import { FaUserTie } from "react-icons/fa";
+import { GiPoliceOfficerHead } from "react-icons/gi";
 
 function Sidebar() {
   const [activeLink, setActiveLink] = useState(null);
-  const [isInstitutionOpen, setIsInstitutionOpen] = useState(false);
+ 
 
   const handleLinkClick = (index) => {
     setActiveLink(index);
@@ -27,19 +30,21 @@ function Sidebar() {
   const Sidebar_Links = [
     { id: 1, name: 'Dashboard', path: '/admin', icon: <MdDashboard /> },
     { id: 2, name: 'Users', path: '/admin/users', icon: <FaUsers /> },
+    
     {
-      id: 3, 
-      name: 'Institution',
-      path:"/admin/instutitions", 
+      id: 4, 
+      name: 'Insurances',
+      path:"/admin/insurance", 
       icon: <BiSolidInstitution />,
     },
+    { id: 3, name: 'Employee', path: '/admin/employees', icon: <GiPoliceOfficerHead /> },
     
-    { id: 4, name: 'Departments', path: '/admin/departiments', icon: <FcDepartment />
+    { id: 5, name: 'Insurance Members', path: '/admin/viewInsuranceMember', icon: <FcDepartment />
     
     },
-    { id: 5, name: 'Policies', path: '/admin/policies', icon: <MdOutlinePolicy /> },
-    { id: 6, name: 'Coments', path: '/admin/coments', icon: <FaCommentDots /> },
-    // { id: 7, name: 'Excel', path: '/admin/excel', icon: <FaFileExcel /> },
+    { id: 6, name: 'Doctors', path: '/admin/manageDoctors', icon: <FaUserNurse /> },
+    { id: 7, name: 'Investigators', path: '/admin/manageInvestigators', icon: <FaUserTie /> },
+
   ];
 
   return (
@@ -60,33 +65,14 @@ function Sidebar() {
                 <span className=' text-indigo-500'>{link.icon}</span>
                 <span className='text-sm text-gray-500 md:flex hidden'>{link.name}</span>
               </Link>
-              {/* {link.children && (
-                <span className='md:flex hidden'>
-                  {isInstitutionOpen ? <IoIosArrowDown /> : <IoIosArrowForward />}
-                </span>
-              )} */}
+
             </div>
           </div>
-          {/* {link.children && isInstitutionOpen && (
-            <ul className='ml-8 space-y-3 mt-2'>
-              {link.children.map((child, childIndex) => (
-                <li key={childIndex} className='font-medium rounded-md py-2 px-5 hover:bg-gray-100 hover:text-indigo-500'>
-                  <Link to={child.path} className='flex items-center space-x-5'>
-                    <span className=' text-indigo-500'>{child.icon}</span>
-                    <span className='text-sm text-gray-500'>{child.name}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )} */}
+
         </li>
       ))}
     </ul>
-    <div className='w-full absolute bottom-5 left-0 px-4 py-4 text-center cursor-pointer'>
-      <p className='flex space-x-2 text-xs text-white py-2 px-5 bg-gradient-to-r from-indigo-500 to-violet-600 rounded-full'>
-        <span>?</span><span>Need help</span>
-      </p>
-    </div>
+
   </div>
   );
 }

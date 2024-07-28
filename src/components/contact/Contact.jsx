@@ -1,64 +1,108 @@
-import React from 'react'
+/* eslint-disable no-unused-vars */
+import React, { useState } from 'react';
+import axios from 'axios';
 
 const Contact = () => {
-    return (
-        <section id="contact">
-            <div
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        subject: '',
+        message: ''
+    });
 
-                className="container">
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value
+        });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post('http://127.0.0.1:8000/contact/', formData);
+            if (response.data) {
+                alert('Message sent successfully');
+                setFormData({
+                    name: '',
+                    email: '',
+                    subject: '',
+                    message: ''
+                });
+            }
+        } catch (error) {
+            console.error('Error sending message', error);
+        }
+    };
+
+    return (
+        <section id="contact" className="py-12">
+            <div className="container mx-auto px-4">
                 <h2
                     data-aos="fade-up"
-                    className=' text-headingColor font-[700] text-[2.5rem] mb-8 text-center'>Get in tourch</h2>
-                <div className=' md:flex justify-center items-center'>
-
+                    className='text-headingColor font-bold text-3xl mb-8 text-center'
+                >
+                    Write to Us
+                </h2>
+                <div className='flex justify-center items-center'>
                     <div
                         data-aos="fade-left"
-                        className=' w-full mt-8 md:mt-0 md:w-1/2 
-                    sm:h-[450px] lg:flex items-center bg-indigo-100 px-4 lg:px-8 py-8'>
-                        <form className=' w-full' action="">
+                        className='w-full max-w-md mt-8 sm:h-[450px] flex items-center bg-indigo-100 px-4 lg:px-8 py-8 mb-14 rounded-lg shadow-lg'
+                    >
+                        <form className='w-full' onSubmit={handleSubmit}>
                             <div className="mb-5">
                                 <input
                                     type="text"
-                                    name="" id=""
+                                    name="name"
                                     placeholder='Enter your name'
-                                    className=' w-full p-3 focus:outline-none rounded-[5px]'
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    className='w-full p-3 focus:outline-none rounded-md border border-gray-300'
                                 />
                             </div>
                             <div className="mb-5">
                                 <input
                                     type="email"
-                                    name="" id=""
+                                    name="email"
                                     placeholder='Enter your Email'
-                                    className=' w-full p-3 focus:outline-none rounded-[5px]'
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    className='w-full p-3 focus:outline-none rounded-md border border-gray-300'
                                 />
                             </div>
                             <div className="mb-5">
                                 <input
                                     type="text"
-                                    name="" id=""
+                                    name="subject"
                                     placeholder='Subject'
-                                    className=' w-full p-3 focus:outline-none rounded-[5px]'
+                                    value={formData.subject}
+                                    onChange={handleChange}
+                                    className='w-full p-3 focus:outline-none rounded-md border border-gray-300'
                                 />
                             </div>
                             <div className="mb-5">
                                 <textarea
-                                    type="text"
+                                    name="message"
                                     rows={3}
-                                    name="" id=""
-                                    placeholder='Write you message'
-                                    className=' w-full p-3 focus:outline-none rounded-[5px]'
+                                    placeholder='Write your message'
+                                    value={formData.message}
+                                    onChange={handleChange}
+                                    className='w-full p-3 focus:outline-none rounded-md border border-gray-300'
                                 />
                             </div>
-                            <button className='flex items-center justify-center gap-1 w-full p-3 focus:outline-none rounded-[5px] bg-gray-500 text-white
-                             hover:bg-headingColor ease-linear duration-150'>
-                                <i class="ri-mail-send-line text-2xl"></i>Send Message</button>
+                            <button
+                                type="submit"
+                                className='flex items-center justify-center gap-1 w-full p-3 focus:outline-none rounded-md bg-gray-500 text-white hover:bg-headingColor ease-linear duration-150'
+                            >
+                                <i className="ri-mail-send-line text-2xl"></i>Send Message
+                            </button>
                         </form>
                     </div>
                 </div>
-
             </div>
         </section>
-    )
-}
+    );
+};
 
-export default Contact
+export default Contact;
