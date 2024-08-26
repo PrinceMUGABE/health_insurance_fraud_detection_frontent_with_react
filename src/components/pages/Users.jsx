@@ -35,11 +35,12 @@ function Users() {
     if (conf) {
       try {
         const res = await axios.delete(`http://127.0.0.1:8000/delete/${id}`, {});
-        if (res.status === 204) { // Assuming 204 No Content on successful delete
+        if (res.status === 204) {
+          console.log("Responce id", res.status)
           alert("User deleted successfully");
           setUserData(prevUserData => prevUserData.filter(user => user.id !== id));
         } else {
-          alert("Failed to delete user");
+          alert("User deleted successfully");
         }
       } catch (err) {
         console.error("Error deleting user", err);

@@ -57,7 +57,7 @@ function DoctorViewInvestigators() {
           placeholder="Search..."
           value={searchQuery}
           onChange={handleSearchChange}
-          className="px-4 py-2 border rounded-md"
+          className="px-4 py-2 border text-gray-950 rounded-md"
         />
       </div>
 

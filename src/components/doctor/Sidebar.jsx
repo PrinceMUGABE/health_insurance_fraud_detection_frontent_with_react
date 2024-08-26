@@ -37,7 +37,7 @@ function Sidebar() {
     // },
     // { id: 5, name: 'Doctors', path: '/admin/manageDoctors', icon: <MdOutlinePolicy /> },
     { id: 6, name: 'Investigators', path: '/doctor/investigator', icon: <FaCommentDots /> },
-    { id: 7, name: 'Frauded Insurances', path: '/doctor/frauds', icon: <FaFileExcel /> },
+    { id: 7, name: 'Prediction', path: '/doctor/frauds', icon: <FaFileExcel /> },
   ];
 
   return (

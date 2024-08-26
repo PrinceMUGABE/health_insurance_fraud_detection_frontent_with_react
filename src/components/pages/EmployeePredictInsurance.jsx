@@ -111,8 +111,8 @@ const EmployeePredictInsuranceMember = () => {
   return (
     <div className="min-h-screen bg-white p-6 lg:p-12">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl font-bold text-center text-gray-900 mb-2">Create New Member</h2>
-        <p className="text-center text-gray-600 mb-8">Add New Insurance Member</p>
+        <h2 className="text-3xl font-bold text-center text-gray-900 mb-2">Predict Member</h2>
+        {/* <p className="text-center text-gray-600 mb-8">Predict Insurance Member</p> */}
         
         <form className="space-y-6 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-8" onSubmit={handleSubmit}>
           {/* Left Column */}

@@ -21,7 +21,7 @@ const Header = () => {
   return (
     <div className="flex justify-between items-center p-4 bg-white shadow-md">
       <div>
-        <h1 className="text-xs text-gray-500">Insurance Fraud Detection System</h1>
+        <h1 className="text-xs text-gray-500">FraudGuardHealth System</h1>
         {/* <p className="text-xl text-black font-semibold">{username}</p> */}
       </div>
       <div className="flex items-center space-x-5">

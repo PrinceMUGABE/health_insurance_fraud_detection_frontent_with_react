@@ -6,6 +6,8 @@ import { Link } from 'react-router-dom';
 function EmployeeManageInsuranceMember() {
   const [clientsData, setClientsData] = useState([]);
   const [filter, setFilter] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const handleFetch = async () => {
     try {
@@ -32,6 +34,12 @@ function EmployeeManageInsuranceMember() {
     filter === 'all' || (client.insurance && client.insurance.insurance_code.toLowerCase() === filter.toLowerCase())
   );
 
+  // Pagination calculation
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+
   const handleDelete = async (id) => {
     const conf = window.confirm("Do you want to delete this client?");
     if (conf) {
@@ -48,6 +56,22 @@ function EmployeeManageInsuranceMember() {
         alert("An error occurred while deleting the member");
       }
     }
+  };
+
+  const renderPagination = () => {
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pageNumbers.push(
+        <button
+          key={i}
+          onClick={() => setCurrentPage(i)}
+          className={`px-2 py-1 mx-1 ${i === currentPage ? 'bg-blue-700 text-white' : 'bg-gray-300 text-black'}`}
+        >
+          {i}
+        </button>
+      );
+    }
+    return pageNumbers;
   };
 
   return (
@@ -69,8 +93,8 @@ function EmployeeManageInsuranceMember() {
             </tr>
           </thead>
           <tbody>
-            {filteredData.length > 0 ? (
-              filteredData.map((client, index) => (
+            {currentItems.length > 0 ? (
+              currentItems.map((client, index) => (
                 <tr key={index} className="odd:bg-white odd:dark:bg-gray-50 even:bg-gray-50 even:dark:bg-gray-50border-b dark:border-gray-700">
                   <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-gray-900">
                     {client.first_name}
@@ -103,11 +127,14 @@ function EmployeeManageInsuranceMember() {
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="px-6 py-4 text-center">No clients found</td>
+                <td colSpan="6" className="px-6 py-4 text-center">No member found</td>
               </tr>
             )}
           </tbody>
         </table>
+      </div>
+      <div className="flex justify-center mt-4">
+        {renderPagination()}
       </div>
     </>
   );

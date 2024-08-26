@@ -1,9 +1,5 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-undef */
-// eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Navigate } from 'react-router-dom';
 
 function InsuranceEmployees() {
   const [employeeData, setEmployeeData] = useState([]);
@@ -32,7 +28,13 @@ function InsuranceEmployees() {
       const res = await axios.get('http://127.0.0.1:8000/employee/employees/');
       if (res.data && res.data.employees) {
         const employees = JSON.parse(res.data.employees);
-        setEmployeeData(employees);
+        setEmployeeData(employees.map(employee => ({
+          ...employee,
+          fields: {
+            ...employee.fields,
+            insurance: employee.fields.insurance || '' // Ensure insurance is always a string
+          }
+        })));
       } else {
         console.log("Empty response data");
       }
@@ -52,6 +54,7 @@ function InsuranceEmployees() {
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
+    setCurrentPage(1); // Reset to the first page on search
   };
 
   const handleDelete = async (id) => {
@@ -108,23 +111,32 @@ function InsuranceEmployees() {
       if (res.status === 201) {
         alert("Employee created successfully");
         setEmployeeData([...employeeData, res.data]);
-        setShowCreateModal(false);
+        setShowCreateModal(false); // Close modal after successful creation
+        handleFetch(); // Refresh the employee list
       } else {
         alert("Failed to create employee");
       }
-      Navigate('/admin/employees'); // This should be <Navigate to='/admin/employees' /> or use history.push()
     } catch (err) {
       console.error("Error creating employee", err);
-      alert("An error occurred while creating the employee");
+      alert("An error occurred while adding the employee");
+      setShowCreateModal(false); // Close modal even if there's an error
+      handleFetch(); // Refresh the employee list
     }
   };
 
   const filteredData = employeeData.filter(employee => {
-    const queryMatch = employee.fields.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      employee.fields.last_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      employee.fields.phone.includes(searchQuery) ||
-      (employee.fields.insurance && employee.fields.insurance.toLowerCase().includes(searchQuery.toLowerCase()));
-    return queryMatch;
+    if (!employee || !employee.fields) return false;
+
+    const firstName = employee.fields.first_name.toLowerCase();
+    const lastName = employee.fields.last_name.toLowerCase();
+    const phone = employee.fields.phone;
+    const insurance = (typeof employee.fields.insurance === 'string' ? employee.fields.insurance.toLowerCase() : '');
+    const query = searchQuery.toLowerCase();
+
+    return firstName.includes(query) ||
+      lastName.includes(query) ||
+      phone.includes(searchQuery) ||
+      insurance.includes(query);
   });
 
   const indexOfLastRow = currentPage * rowsPerPage;
@@ -147,12 +159,14 @@ function InsuranceEmployees() {
           onChange={handleSearchChange}
           className="px-4 py-2 bg-white text-black border rounded-full"
         />
-        <button
-          onClick={() => setShowCreateModal(true)}
+        {/* <button
+          onClick={() => {
+            setShowCreateModal(true);
+          }}
           className="px-4 py-2 bg-blue-500 text-white rounded"
         >
           Create New Employee
-        </button>
+        </button> */}
       </div>
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -184,13 +198,6 @@ function InsuranceEmployees() {
                   <td className="px-6 py-4">
                     <a
                       href="#"
-                      onClick={() => handleEdit(employee.pk)}
-                      className="text-indigo-600 hover:text-indigo-900 mr-2"
-                    >
-                      Edit
-                    </a>
-                    <a
-                      href="#"
                       onClick={() => handleDelete(employee.pk)}
                       className="text-red-600 hover:text-red-900"
                     >
@@ -212,159 +219,96 @@ function InsuranceEmployees() {
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 ${currentPage === 1 ? 'cursor-not-allowed' : 'hover:text-gray-400'}`}
+                className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
               >
-                <span className="sr-only">Previous</span>
-                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path
-                    fillRule="evenodd"
-                    d="M12.293 3.293a1 1 0 010 1.414L8.414 8H18a1 1 0 110 2H8.414l3.879 3.879a1 1 0 01-1.415 1.415l-5.586-5.586a1 1 0 010-1.415l5.586-5.586a1 1 0 011.415 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+                Previous
               </button>
-              {[...Array(totalPages)].map((_, index) => (
+              {[...Array(totalPages)].map((_, i) => (
                 <button
-                  key={index + 1}
-                  onClick={() => handlePageChange(index + 1)}
-                  className={`relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium ${currentPage === index + 1 ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-600'}`}
+                  key={i}
+                  onClick={() => handlePageChange(i + 1)}
+                  className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${currentPage === i + 1 ? 'bg-blue-500 text-white' : 'bg-white text-gray-500'} border-gray-300 hover:bg-gray-50`}
                 >
-                  {index + 1}
+                  {i + 1}
                 </button>
               ))}
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 ${currentPage === totalPages ? 'cursor-not-allowed' : 'hover:text-gray-400'}`}
+                className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
               >
-                <span className="sr-only">Next</span>
-                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path
-                    fillRule="evenodd"
-                    d="M7.707 3.293a1 1 0 000 1.414L11.586 8H2a1 1 0 100 2h9.586l-3.879 3.879a1 1 0 101.415 1.415l5.586-5.586a1 1 0 000-1.415l-5.586-5.586a1 1 0 00-1.415 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+                Next
               </button>
             </nav>
           </div>
         )}
       </div>
-
       {showCreateModal && (
-        <div className="fixed inset-0 z-10 overflow-y-auto">
-          <div className="fixed inset-0 w-full h-full bg-black opacity-40" onClick={() => setShowCreateModal(false)}></div>
-          <div className="flex items-center min-h-screen px-4 py-8">
-            <div className="relative w-full max-w-lg p-4 mx-auto bg-white rounded-md shadow-lg">
-              <div className="mt-3 sm:flex">
-                <div className="mt-2 text-center sm:ml-4 sm:text-left">
-                  <h4 className="text-lg font-medium text-gray-800">Create New Employee</h4>
-                  <div className="mt-2">
-                    <div className="space-y-4">
-                      {['first_name', 'last_name', 'phone', 'email', 'address', 'insurance'].map((field) => (
-                        <div key={field}>
-                          <label className="block mb-1 text-sm text-gray-600">{field.replace('_', ' ').toUpperCase()}</label>
-                          {field === 'insurance' ? (
-                            <select
-                              name={field}
-                              value={newEmployee[field]}
-                              onChange={(e) => setNewEmployee({ ...newEmployee, [field]: e.target.value })}
-                              className="w-full px-3 py-2 text-sm text-gray-700 border rounded-lg focus:outline-none focus:border-indigo-500"
-                            >
-                              <option value="">Select Insurance</option>
-                              {insurances.map((insurance) => (
-                                <option key={insurance.id} value={insurance.id}>{insurance.name}</option>
-                              ))}
-                            </select>
-                          ) : (
-                            <input
-                              type="text"
-                              name={field}
-                              value={newEmployee[field]}
-                              onChange={(e) => setNewEmployee({ ...newEmployee, [field]: e.target.value })}
-                              className="w-full px-3 py-2 text-sm text-gray-700 border rounded-lg focus:outline-none focus:border-indigo-500"
-                            />
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="mt-4">
-                    <button
-                      onClick={handleCreateNewEmployee}
-                      className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
-                    >
-                      Save
-                    </button>
-                    <button
-                      onClick={() => setShowCreateModal(false)}
-                      className="px-4 py-2 ml-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:bg-gray-50"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50">
+          <div className="bg-white p-4 rounded-lg shadow-lg">
+            <h2 className="text-xl font-bold mb-4">Create New Employee</h2>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              handleCreateNewEmployee();
+            }}>
+              <input
+                type="text"
+                placeholder="First Name"
+                value={newEmployee.first_name}
+                onChange={(e) => setNewEmployee({ ...newEmployee, first_name: e.target.value })}
+                className="block w-full mb-2 px-3 py-2 border rounded"
+              />
+              <input
+                type="text"
+                placeholder="Last Name"
+                value={newEmployee.last_name}
+                onChange={(e) => setNewEmployee({ ...newEmployee, last_name: e.target.value })}
+                className="block w-full mb-2 px-3 py-2 border rounded"
+              />
+              <input
+                type="text"
+                placeholder="Phone"
+                value={newEmployee.phone}
+                onChange={(e) => setNewEmployee({ ...newEmployee, phone: e.target.value })}
+                className="block w-full mb-2 px-3 py-2 border rounded"
+              />
+              <input
+                type="email"
+                placeholder="Email"
+                value={newEmployee.email}
+                onChange={(e) => setNewEmployee({ ...newEmployee, email: e.target.value })}
+                className="block w-full mb-2 px-3 py-2 border rounded"
+              />
+              <input
+                type="text"
+                placeholder="Address"
+                value={newEmployee.address}
+                onChange={(e) => setNewEmployee({ ...newEmployee, address: e.target.value })}
+                className="block w-full mb-2 px-3 py-2 border rounded"
+              />
+              <input
+                type="text"
+                placeholder="Insurance"
+                value={newEmployee.insurance}
+                onChange={(e) => setNewEmployee({ ...newEmployee, insurance: e.target.value })}
+                className="block w-full mb-2 px-3 py-2 border rounded"
+              />
+              <div className="flex justify-end mt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateModal(false)}
+                  className="px-4 py-2 bg-gray-500 text-white rounded mr-2"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-500 text-white rounded"
+                >
+                  Save
+                </button>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {editEmployee && (
-        <div className="fixed inset-0 z-10 overflow-y-auto">
-          <div className="fixed inset-0 w-full h-full bg-black opacity-40" onClick={() => setEditEmployee(null)}></div>
-          <div className="flex items-center min-h-screen px-4 py-8">
-            <div className="relative w-full max-w-lg p-4 mx-auto bg-white rounded-md shadow-lg">
-              <div className="mt-3 sm:flex">
-                <div className="mt-2 text-center sm:ml-4 sm:text-left">
-                  <h4 className="text-lg font-medium text-gray-800">Edit Employee</h4>
-                  <div className="mt-2">
-                    <div className="space-y-4">
-                      {['first_name', 'last_name', 'phone', 'email', 'address', 'insurance'].map((field) => (
-                        <div key={field}>
-                          <label className="block mb-1 text-sm text-gray-600">{field.replace('_', ' ').toUpperCase()}</label>
-                          {field === 'insurance' ? (
-                            <select
-                              name={field}
-                              value={editEmployee[field]}
-                              onChange={(e) => setEditEmployee({ ...editEmployee, [field]: e.target.value })}
-                              className="w-full px-3 py-2 text-sm text-gray-700 border rounded-lg focus:outline-none focus:border-indigo-500"
-                            >
-                              <option value="">Select Insurance</option>
-                              {insurances.map((insurance) => (
-                                <option key={insurance.id} value={insurance.id}>{insurance.name}</option>
-                              ))}
-                            </select>
-                          ) : (
-                            <input
-                              type="text"
-                              name={field}
-                              value={editEmployee[field]}
-                              onChange={(e) => setEditEmployee({ ...editEmployee, [field]: e.target.value })}
-                              className="w-full px-3 py-2 text-sm text-gray-700 border rounded-lg focus:outline-none focus:border-indigo-500"
-                            />
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="mt-4">
-                    <button
-                      onClick={handleSave}
-                      className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
-                    >
-                      Save
-                    </button>
-                    <button
-                      onClick={() => setEditEmployee(null)}
-                      className="px-4 py-2 ml-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:bg-gray-50"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+            </form>
           </div>
         </div>
       )}
